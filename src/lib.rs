@@ -19,6 +19,14 @@ pub struct QueryResult {
     pub outstanding_shares: u64,
 }
 
+/// For N orders and P queries, this has a growth order something like:
+///
+/// -   P log P (to sort the queries
+/// -   N * 2 log P (to find the start and end of the range corresponding to each querty
+/// -   To actually add up the queries that match some order takes time that is worst-case P but
+///     best case 0, and the average case depends on how large the time ranges covered by the orders
+///     are. If you figure it's something like log P, then the overal time of this method is:
+/// P log P + N log P (average case)
 pub fn query_binsearch(orders: &[Order], queries: &[Query]) -> Vec<QueryResult> {
     /// Mapping from a query time to the index in the result that it actually corresponds to.
     ///
@@ -67,6 +75,7 @@ pub fn query_binsearch(orders: &[Order], queries: &[Query]) -> Vec<QueryResult> 
     query_results
 }
 
+/// For N orders and P queries, this has a growth order of N * P.
 pub fn query_naive(orders: &[Order], queries: &[Query]) -> Vec<QueryResult> {
     let mut results = Vec::with_capacity(queries.len());
     for query in queries {
